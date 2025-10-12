@@ -940,7 +940,7 @@ FROM users;
 
 ---
 
-## 十二、 DML（数据操作语言）
+## 十二、DML（数据操作语言）
 
 ### 1. DML（Data Manipulation Language）简介
 
@@ -1109,4 +1109,490 @@ DELETE FROM orders WHERE create_time < '2025-01-01';
 
 ---
 
+当然可以 👍
+## 十三、DDL（数据定义语言）
 
+### 1. 什么是 DDL？
+
+**DDL（Data Definition Language，数据定义语言）**
+用于定义、修改和删除数据库结构，例如：
+
+* 数据库（Database）
+* 表（Table）
+* 索引（Index）
+* 视图（View）
+* 约束（Constraint）
+* 触发器（Trigger）
+
+DDL 操作 **不会操作数据行本身**，而是操作 **结构定义**。
+每次执行 DDL 语句时，数据库系统会 **自动提交（Auto Commit）**，无法回滚。
+
+---
+
+### 2. DDL 的主要命令
+
+| 命令         | 作用                 | 示例                                      |
+| ---------- | ------------------ | --------------------------------------- |
+| `CREATE`   | 创建数据库对象（如表、视图、索引等） | `CREATE TABLE users (...);`             |
+| `ALTER`    | 修改数据库对象结构          | `ALTER TABLE users ADD COLUMN age INT;` |
+| `DROP`     | 删除数据库对象            | `DROP TABLE users;`                     |
+| `TRUNCATE` | 清空表中所有数据（结构保留）     | `TRUNCATE TABLE users;`                 |
+| `RENAME`   | 重命名数据库对象           | `RENAME TABLE users TO members;`        |
+
+---
+
+### 3. 常用 DDL 语法详解
+
+1️⃣ 创建数据库
+
+```sql
+CREATE DATABASE mydb CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+```
+
+> 💡 可选参数：
+>
+> * `CHARACTER SET`：指定字符集
+> * `COLLATE`：指定排序规则
+
+**查看数据库：**
+
+```sql
+SHOW DATABASES;
+```
+
+**删除数据库：**
+
+```sql
+DROP DATABASE mydb;
+```
+
+---
+
+2️⃣ 创建表
+
+```sql
+CREATE TABLE users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    age INT DEFAULT 18,
+    gender ENUM('M', 'F'),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+✨ 说明
+
+* `PRIMARY KEY`：主键
+* `AUTO_INCREMENT`：自增
+* `NOT NULL`：非空
+* `UNIQUE`：唯一
+* `DEFAULT`：默认值
+* `ENUM`：枚举类型
+* `DATETIME DEFAULT CURRENT_TIMESTAMP`：自动记录创建时间
+
+✅ 查看表结构
+
+```sql
+DESC users;
+SHOW CREATE TABLE users;
+```
+
+---
+
+3️⃣ 修改表结构（ALTER）
+
+➕ 添加列
+
+```sql
+ALTER TABLE users ADD COLUMN phone VARCHAR(20);
+```
+
+✏️ 修改列类型
+
+```sql
+ALTER TABLE users MODIFY COLUMN age SMALLINT;
+```
+
+🪚 重命名列
+
+```sql
+ALTER TABLE users CHANGE COLUMN name username VARCHAR(50);
+```
+
+❌ 删除列
+
+```sql
+ALTER TABLE users DROP COLUMN gender;
+```
+
+⚙️ 添加约束
+
+```sql
+ALTER TABLE users
+ADD CONSTRAINT unique_email UNIQUE (email);
+```
+
+🔗 添加外键
+
+```sql
+ALTER TABLE orders
+ADD CONSTRAINT fk_user FOREIGN KEY (user_id)
+REFERENCES users(id)
+ON DELETE CASCADE;
+```
+
+---
+
+4️⃣ 删除表（DROP）
+
+```sql
+DROP TABLE users;
+```
+
+> ⚠️ 一旦删除，数据和结构都会消失，**不可恢复！**
+
+可加 `IF EXISTS` 防止报错：
+
+```sql
+DROP TABLE IF EXISTS users;
+```
+
+---
+
+5️⃣ 清空表（TRUNCATE）
+
+```sql
+TRUNCATE TABLE users;
+```
+
+* 删除表中所有数据，但保留表结构。
+* 比 `DELETE FROM users;` 更快。
+* **无法回滚**，因为是 DDL 操作。
+
+---
+
+6️⃣ 重命名表（RENAME）
+
+```sql
+RENAME TABLE users TO customers;
+```
+
+---
+
+### 4. DDL 中的约束（Constraint）
+
+| 约束类型          | 作用               | 示例                                           |
+| ------------- | ---------------- | -------------------------------------------- |
+| `PRIMARY KEY` | 唯一标识每行           | `id INT PRIMARY KEY`                         |
+| `FOREIGN KEY` | 参照其他表            | `FOREIGN KEY (user_id) REFERENCES users(id)` |
+| `UNIQUE`      | 确保值唯一            | `email VARCHAR(100) UNIQUE`                  |
+| `NOT NULL`    | 禁止空值             | `name VARCHAR(50) NOT NULL`                  |
+| `DEFAULT`     | 设定默认值            | `age INT DEFAULT 18`                         |
+| `CHECK`       | 检查条件（MySQL 8.0+） | `CHECK (age >= 0)`                           |
+
+---
+
+### 5. 索引（Index）
+
+索引用于加速查询性能，但会增加写入成本。
+
+```sql
+CREATE INDEX idx_users_email ON users(email);
+SHOW INDEX FROM users;
+DROP INDEX idx_users_email ON users;
+```
+
+---
+
+### 6. 视图（View）
+
+视图是基于查询结果的虚拟表，不存储实际数据。
+
+```sql
+CREATE VIEW user_info AS
+SELECT name, email FROM users WHERE age > 18;
+
+SELECT * FROM user_info;
+DROP VIEW user_info;
+```
+
+---
+
+### 7. 触发器（Trigger）
+
+在特定事件发生时自动执行 SQL（如插入、删除）。
+
+```sql
+CREATE TRIGGER before_insert_user
+BEFORE INSERT ON users
+FOR EACH ROW
+SET NEW.created_at = NOW();
+```
+
+---
+
+### 8. DDL 与 DML 的区别
+
+| 对比项   | DDL                       | DML                          |
+| ----- | ------------------------- | ---------------------------- |
+| 全称    | Data Definition Language  | Data Manipulation Language   |
+| 功能    | 定义数据库结构                   | 操作数据库数据                      |
+| 示例    | `CREATE`, `ALTER`, `DROP` | `INSERT`, `UPDATE`, `DELETE` |
+| 是否可回滚 | ❌ 不可回滚                    | ✅ 可回滚（事务中）                   |
+| 自动提交  | 是                         | 否                            |
+| 执行速度  | 一般较慢                      | 较快（仅改数据）                     |
+
+---
+
+### 9. 常见面试题
+
+1️⃣ **`DROP` 与 `TRUNCATE` 的区别？**
+
+| 项     | DROP  | TRUNCATE |
+| ----- | ----- | -------- |
+| 删除对象  | 删除表结构 | 保留表结构    |
+| 是否可回滚 | 否     | 否        |
+| 重建表定义 | 不会    | 会保留定义    |
+| 主键计数  | 删除后失效 | 重置自增 ID  |
+
+---
+
+2️⃣ **`ALTER TABLE` 和 `UPDATE` 的区别？**
+
+* `ALTER TABLE` 修改结构
+* `UPDATE` 修改数据
+
+---
+
+3️⃣ **`CREATE` 和 `INSERT` 的区别？**
+
+* `CREATE` 定义结构（DDL）
+* `INSERT` 操作数据（DML）
+
+---
+
+### 10. 总结要点速查
+
+| 类别  | 常用语句                         | 说明      |
+| --- | ---------------------------- | ------- |
+| 数据库 | `CREATE/DROP DATABASE`       | 管理数据库本身 |
+| 表结构 | `CREATE/ALTER/DROP/TRUNCATE` | 定义或修改表  |
+| 索引  | `CREATE/DROP INDEX`          | 提高查询性能  |
+| 视图  | `CREATE/DROP VIEW`           | 虚拟查询结果  |
+| 触发器 | `CREATE/DROP TRIGGER`        | 自动执行逻辑  |
+
+---
+
+## 十四、DCL（数据控制语言）
+
+### 1. 定义
+
+**DCL（Data Control Language）** 用于控制数据库中 **用户访问权限** 和 **安全管理**，包括：
+
+* 授权（给用户分配权限）
+* 回收权限
+* 管理角色、用户、密码等
+
+常用于数据库管理员（DBA）执行安全配置。
+
+---
+
+### 2. 常用 DCL 语句
+
+| 命令             | 功能       | 示例                                                             |
+| -------------- | -------- | -------------------------------------------------------------- |
+| `GRANT`        | 授予用户某种权限 | `GRANT SELECT, INSERT ON employees TO 'devuser'@'localhost';`  |
+| `REVOKE`       | 撤销用户权限   | `REVOKE INSERT ON employees FROM 'devuser'@'localhost';`       |
+| `CREATE USER`  | 创建新用户    | `CREATE USER 'devuser'@'localhost' IDENTIFIED BY '123456';`    |
+| `DROP USER`    | 删除用户     | `DROP USER 'devuser'@'localhost';`                             |
+| `SET PASSWORD` | 修改密码     | `SET PASSWORD FOR 'devuser'@'localhost' = PASSWORD('newpwd');` |
+| `SHOW GRANTS`  | 查看权限     | `SHOW GRANTS FOR 'devuser'@'localhost';`                       |
+
+---
+
+### 3. GRANT 语法详解
+
+```sql
+GRANT privileges
+ON database.table
+TO 'user'@'host'
+[IDENTIFIED BY 'password']
+[WITH GRANT OPTION];
+```
+
+**参数说明：**
+
+| 参数                  | 含义                                                              |
+| ------------------- | --------------------------------------------------------------- |
+| `privileges`        | 权限类型，如 `SELECT`, `INSERT`, `UPDATE`, `DELETE`, `ALL PRIVILEGES` |
+| `database.table`    | 授权范围，例如 `db1.*` 表示数据库 db1 下所有表                                  |
+| `'user'@'host'`     | 用户名与主机限制，如 `'devuser'@'%'` 允许任意主机访问                             |
+| `WITH GRANT OPTION` | 允许该用户再将权限授予他人                                                   |
+
+**示例：**
+
+```sql
+GRANT SELECT, UPDATE ON shop.products TO 'staff'@'localhost' WITH GRANT OPTION;
+```
+
+---
+
+### 4. REVOKE 权限撤销
+
+```sql
+REVOKE UPDATE ON shop.products FROM 'staff'@'localhost';
+```
+
+> ⚠️ 注意：
+>
+> * 撤销权限后，用户立即失去操作能力
+> * 如果该用户曾使用 `WITH GRANT OPTION` 授权给别人，**那些下游授权也会一并被撤销**
+
+---
+
+### 5. 权限类型总结（MySQL 常见）
+
+| 权限类型             | 说明       |
+| ---------------- | -------- |
+| `SELECT`         | 查询数据     |
+| `INSERT`         | 插入数据     |
+| `UPDATE`         | 修改数据     |
+| `DELETE`         | 删除数据     |
+| `CREATE`         | 创建数据库对象  |
+| `DROP`           | 删除数据库对象  |
+| `ALTER`          | 修改结构     |
+| `INDEX`          | 创建/删除索引  |
+| `GRANT OPTION`   | 允许再次授予权限 |
+| `ALL PRIVILEGES` | 授予全部权限   |
+
+---
+
+## 十五、TCL（事务控制语言）
+
+### 1. 定义
+
+**TCL（Transaction Control Language）** 用于控制数据库中事务的执行过程。
+
+事务是指一组 SQL 操作的逻辑单元，必须 **全部成功** 或 **全部失败回滚**，以保证数据一致性。
+
+---
+
+### 2. 事务的四大特性（ACID）
+
+| 特性                  | 含义                       | 示例                 |
+| ------------------- | ------------------------ | ------------------ |
+| **A - Atomicity**   | 原子性：事务中所有操作要么全部成功，要么全部失败 | 银行转账：扣钱成功但存钱失败必须回滚 |
+| **C - Consistency** | 一致性：事务前后数据库状态一致          | A转B后，总余额不变         |
+| **I - Isolation**   | 隔离性：多个事务并发时互不影响          | 并发订单时库存不冲突         |
+| **D - Durability**  | 持久性：提交后结果永久保存            | 断电后数据仍在磁盘中         |
+
+---
+
+### 3. TCL 常用命令
+
+| 命令                            | 功能         |
+| ----------------------------- | ---------- |
+| `START TRANSACTION` / `BEGIN` | 开启事务       |
+| `COMMIT`                      | 提交事务（保存修改） |
+| `ROLLBACK`                    | 回滚事务（撤销修改） |
+| `SAVEPOINT`                   | 设置事务保存点    |
+| `ROLLBACK TO SAVEPOINT`       | 回滚到指定保存点   |
+| `SET AUTOCOMMIT`              | 设置自动提交模式   |
+
+---
+
+### 4. 事务示例：银行转账
+
+```sql
+START TRANSACTION;
+
+UPDATE accounts SET balance = balance - 500 WHERE id = 1;
+UPDATE accounts SET balance = balance + 500 WHERE id = 2;
+
+COMMIT;
+```
+
+如果中途出错：
+
+```sql
+ROLLBACK;
+```
+
+---
+
+### 5. 使用保存点（SAVEPOINT）
+
+```sql
+START TRANSACTION;
+
+UPDATE users SET points = points + 10 WHERE id = 1;
+SAVEPOINT step1;
+
+UPDATE users SET level = level + 1 WHERE id = 1;
+ROLLBACK TO step1;
+
+COMMIT;
+```
+
+📘 说明：
+
+* `SAVEPOINT` 可让你部分回滚事务
+* `ROLLBACK TO` 只撤销到保存点，不影响之前的部分
+
+---
+
+### 6. 自动提交控制
+
+默认情况下，MySQL 是自动提交模式。
+
+```sql
+-- 关闭自动提交
+SET AUTOCOMMIT = 0;
+
+-- 手动开启事务
+START TRANSACTION;
+
+UPDATE goods SET stock = stock - 1 WHERE id = 100;
+COMMIT;
+```
+
+> ✅ 推荐：
+> 在涉及多表操作、财务类逻辑时一定使用事务，避免脏数据。
+
+---
+
+### 7. TCL 与 DCL 的区别
+
+| 项目   | DCL                   | TCL                          |
+| ---- | --------------------- | ---------------------------- |
+| 全称   | Data Control Language | Transaction Control Language |
+| 功能   | 控制用户访问与权限             | 控制事务提交与回滚                    |
+| 常用语句 | GRANT、REVOKE          | COMMIT、ROLLBACK、SAVEPOINT    |
+| 作用范围 | 安全、权限                 | 数据一致性                        |
+| 执行对象 | 用户、对象                 | SQL 操作事务                     |
+
+---
+
+### 8. 常见面试题
+
+**Q1：`ROLLBACK` 和 `TRUNCATE` 的区别？**
+
+* `ROLLBACK` 是事务级别，可撤销未提交操作。
+* `TRUNCATE` 是 DDL 操作，不能回滚。
+
+---
+
+**Q2：`SAVEPOINT` 的用途？**
+
+* 用于在事务中创建多个阶段，可部分回滚。
+* 对复杂逻辑操作尤其有用。
+
+---
+
+**Q3：事务中失败的 SQL 会立即回滚吗？**
+
+* 不会立即回滚，只会标记错误。
+* 必须由程序显式执行 `ROLLBACK;` 才真正撤销。
+
+---
