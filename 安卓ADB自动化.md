@@ -2,15 +2,15 @@
 
 ADB 是 Android Debug Bridge，可以通过命令行远程控制设备：
 
-| 操作       | adb 命令                                                                      |                     |
-| -------- | --------------------------------------------------------------------------- | ------------------- |
-| 点击       | `adb shell input tap x y`                                                   |                     |
-| 滑动       | `adb shell input swipe x1 y1 x2 y2 [duration]`                              |                     |
-| 输入文字     | `adb shell input text "hello"`                                              |                     |
-| 返回       | `adb shell input keyevent 4`                                                |                     |
-| 截图       | `adb exec-out screencap -p > screen.png`                                    |                     |
-| 获取当前活动窗口 | `adb shell dumpsys window                                                   | grep mCurrentFocus` |
-| 查找 UI 元素 | `adb shell uiautomator dump /sdcard/view.xml` + `adb pull /sdcard/view.xml` |                     |
+| 操作       | adb 命令                                                                      |
+| -------- | --------------------------------------------------------------------------- |
+| 点击       | `adb shell input tap x y`                                                   |
+| 滑动       | `adb shell input swipe x1 y1 x2 y2 [duration]`                              |
+| 输入文字     | `adb shell input text "hello"`                                              |
+| 返回       | `adb shell input keyevent 4`                                                |
+| 截图       | `adb exec-out screencap -p > screen.png`                                    |
+| 获取当前活动窗口 | `adb shell dumpsys window | grep mCurrentFocus` |
+| 查找 UI 元素 | `adb shell uiautomator dump /sdcard/view.xml` + `adb pull /sdcard/view.xml` |
 
 ---
 
