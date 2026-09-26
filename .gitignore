@@ -1,1 +1,27 @@
-.vscode
+# macOS
+.DS_Store
+**/.DS_Store
+._*
+
+# IDE / 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 临时文件
+*.tmp
+*.bak
+
+# 测试报告产物
+allure-results/
+allure-report/
