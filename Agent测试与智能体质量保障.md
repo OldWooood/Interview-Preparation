@@ -257,6 +257,8 @@ def run_conversation(agent, simulator, max_turns=15):
 
 ### 5.4 CI 中的 Agent 测试策略（不烧钱的做法）
 
+> 完整可运行的流水线代码与 CI 配置（GitLab CI / GitHub Actions）见 [Agent评测流水线落地示例.md](Agent评测流水线落地示例.md)。
+
 **分层策略（来自 2026 年主流实践）：**
 
 | 层级 | 内容 | 频率 | 成本 |
@@ -398,6 +400,8 @@ cases:
 ---
 
 ## 八、MCP 协议与工具测试（新热点）
+
+> 完整的 MCP 测试用例集（协议/工具/异常/传输/安全/性能/兼容，含 pytest 示例与常见缺陷 Top 10）见 [MCP_Server测试用例集.md](MCP_Server测试用例集.md)。
 
 ### 8.1 MCP 是什么
 
@@ -610,5 +614,7 @@ def test_tool_schema_contract():
 相关文档：
 
 - [AI与大模型测试.md](AI与大模型测试.md) — LLM 评测、RAG/EDD、AI 辅助测试
+- [MCP_Server测试用例集.md](MCP_Server测试用例集.md) — MCP Server 全量测试用例与自动化示例
+- [Agent评测流水线落地示例.md](Agent评测流水线落地示例.md) — 评测流水线代码、CI 门禁与在线评测
 - [测试开发编程与手撕代码.md](测试开发编程与手撕代码.md) — 用户模拟器与评测脚本所需编程基础
 - [服务端核心知识（测试开发）.md](服务端核心知识（测试开发）.md) — 工具背后的网络/中间件知识
